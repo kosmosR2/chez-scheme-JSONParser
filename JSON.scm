@@ -1,16 +1,15 @@
-(define NUMBER_CHAR '(0 1 2 3 4 5 6 7 8 9))
+(define NUMBER_CHAR '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9))
 
 (define charGetter
   (lambda (text)
     (lambda (pointer)
       (string-ref text pointer))))
 
-(define JSONparse
-  (lambda (json)
-    (let ((line 1)
-          (getChar (charGetter json)))
-      
-      )))
+(define (throw-error errorMessage)
+  (raise (condition
+          (make-error)
+          (make-message-condition errorMessage))))
+ 
 
 (define (findFristChar json start)
   (let ((current-char (string-ref json start))
@@ -37,6 +36,40 @@
                  (condition
                   (make-error)
                   (make-message-condition "not a parseable JSON")))))))
+
+(define (loadString JSON start)
+  (define reader (charGetter JSON))
+  (define readUntillEOF (lambda (pointer)
+                          (let ((current-char (reader pointer)))
+                            (cond ((equal? current-char #\\) (let ((next-char (reader (+ 1 pointer))))
+                                                               (if (equal? next-char #\")
+                                                                   (string-append (string #\" next-char)
+                                                                           (readUntillEOF (+ 2 pointer)))
+                                                                   (string-append (string #\\)
+                                                                           (readUntillEOF (+ 1 pointer))))))
+                                  ((equal? current-char #\") "")
+                                  (else (string-append (string current-char)
+                                                (readUntillEOF (+ 1 pointer))))))))
+  (if (equal? (reader start) #\")
+      (readUntillEOF (+ 1 start))
+      (throw-error "not a string")))
+
+
+(define (load-number)
+  
+
+
+
+
+
+
+                       
+        
+
+
+   
+
+
            
           
            
@@ -45,7 +78,7 @@
         
 
 
-
+()
 
       
       
